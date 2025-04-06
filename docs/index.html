@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profile Chatbot - DSPy + Chainlit</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 2rem;
+      color: #333;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+      color: #4b6cb7;
+    }
+    code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    a {
+      color: #4b6cb7;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Chatbot styles */
+    .chat-container {
+      margin-top: 2rem;
+      border-top: 1px solid #ddd;
+      padding-top: 1.5rem;
+    }
+    .chat-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      background: #fefefe;
+      margin-bottom: 1rem;
+    }
+    .chat-msg {
+      margin: 0.5rem 0;
+    }
+    .chat-msg.user {
+      text-align: right;
+      font-weight: bold;
+    }
+    .chat-msg.bot {
+      text-align: left;
+      color: #222;
+    }
+    .chat-input {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .chat-input button {
+      padding: 0.6rem 1rem;
+      border: none;
+      background: #4b6cb7;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .chat-input button:hover {
+      background: #3f57a3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Profile Chatbot</h1>
+    <p>This is a simple chatbot using <strong>DSPy</strong> + <strong>Gemini API</strong> + <strong>FastAPI</strong> + <strong>Chainlit</strong>.</p>
+
+    <h2>🚀 Features</h2>
+    <ul>
+      <li>Modular chatbot logic with DSPy</li>
+      <li>FastAPI REST backend</li>
+      <li>Chainlit frontend (local)</li>
+      <li>Gemini 1.5 Flash as backend LLM</li>
+    </ul>
+
+    <h2>🛠 How to Run</h2>
+    <ol>
+      <li>Clone the repo</li>
+      <li>Set <code>GEMINI_API_KEY</code> in <code>.env</code></li>
+      <li>Run backend: <code>uvicorn api_server:app --reload</code></li>
+      <li>Run frontend: <code>chainlit run chainlit_app.py --port 1989</code></li>
+    </ol>
+
+    <h2>🌐 Links</h2>
+    <ul>
+      <li><a href="https://github.com/arun131/profile_chatbot" target="_blank">View on GitHub</a></li>
+    </ul>
+
+    <div class="chat-container">
+      <h2>💬 Ask Me Anything</h2>
+      <div class="chat-box" id="chat-box">
+        <!-- messages appear here -->
+      </div>
+      <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Type a question..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <p style="margin-top: 2rem;">Made with 💙 using DSPy, Gemini, Chainlit, and FastAPI</p>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const chatBox = document.getElementById('chat-box');
+      const message = input.value.trim();
+      if (!message) return;
+
+      // Show user message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'chat-msg user';
+      userMsg.textContent = message;
+      chatBox.appendChild(userMsg);
+
+      input.value = '';
+
+      try {
+        const response = await fetch('http://localhost:8000/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+
+        // Show bot response
+        const botMsg = document.createElement('div');
+        botMsg.className = 'chat-msg bot';
+        botMsg.textContent = data.response || 'No response.';
+        chatBox.appendChild(botMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (err) {
+        const errMsg = document.createElement('div');
+        errMsg.className = 'chat-msg bot';
+        errMsg.textContent = 'Error: Could not reach backend.';
+        chatBox.appendChild(errMsg);
+      }
+    }
+  </script>
+</body>
+</html>
