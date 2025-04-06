@@ -1,18 +1,6 @@
-# Core
 fastapi
-uvicorn
-
-# Chainlit frontend
-chainlit
-
-# DSPy framework
+uvicorn[standard]
 dspy-ai[all]
-
-# Gemini (Google Generative AI)
-google-generativeai
-
-# Environment variable handling
 python-dotenv
-
-# HTTP for Chainlit backend calls
-requests
+pydantic
+gunicorn
